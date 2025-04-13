@@ -1,0 +1,23 @@
+[
+    {
+      "id": 1,
+      "name": "Christie",
+      "species": "Bunny",
+      "personality": "Peppy",
+      "image_uri": "https://acnhapi.com/v1/images/villagers/472"
+    },
+    {
+      "id": 2,
+      "name": "Ankha",
+      "species": "Cat",
+      "personality": "Snooty",
+      "image_uri": "https://acnhapi.com/v1/images/villagers/164"
+    },
+    {
+      "id": 3,
+      "name": "Lucky",
+      "species": "Dog",
+      "personality": "Lazy",
+      "image_uri": "https://acnhapi.com/v1/images/villagers/297"
+    }
+  ]
