@@ -1,46 +1,96 @@
-# Getting Started with Create React App
+# 🏝️ Animal Crossing Villager Tracker
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A full stack Animal Crossing-themed app that lets you manage your island villagers. Add your favorite characters, view their profiles, and keep your custom island saved locally—just like the real game!
 
-## Available Scripts
+## ✨ Features
 
-In the project directory, you can run:
+- 🔍 Search and add villagers by name
+- 🖼️ View villager info and image (supports local `.png`, `.jpg`, and `.jpeg`)
+- 🧹 Remove villagers with a click
+- 💾 Auto-saves your island using localStorage
+- 🔟 Limit of 10 villagers (just like the real game!)
+- ✅ Fully custom local image support
+- 🧠 Powered by your own backend API (no external dependencies)
 
-### `npm start`
+## 🚀 Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+| Area       | Tech                    |
+|------------|-------------------------|
+| Frontend   | React + TypeScript + Tailwind CSS |
+| Backend    | Node.js + Express       |
+| Data       | Custom JSON (`villagers.json`) |
+| Storage    | localStorage            |
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 🛠️ Getting Started
 
-### `npm test`
+### 1. Clone the Repo
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+git clone https://github.com/YOUR-USERNAME/animal-crossing-villager-tracker.git
+cd animal-crossing-villager-tracker
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# 🏝️ Animal Crossing Villager Tracker
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+A full stack Animal Crossing-themed app that lets you manage your island villagers. Add your favorite characters, view their profiles, and keep your custom island saved locally—just like the real game!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## ✨ Features
 
-### `npm run eject`
+- 🔍 Search and add villagers by name
+- 🖼️ View villager info and image (supports local `.png`, `.jpg`, and `.jpeg`)
+- 🧹 Remove villagers with a click
+- 💾 Auto-saves your island using localStorage
+- 🔟 Limit of 10 villagers (just like the real game!)
+- ✅ Fully custom local image support
+- 🧠 Powered by your own backend API (no external dependencies)
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## 🚀 Tech Stack
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+| Area       | Tech                    |
+|------------|-------------------------|
+| Frontend   | React + TypeScript + Tailwind CSS |
+| Backend    | Node.js + Express       |
+| Data       | Custom JSON (`villagers.json`) |
+| Storage    | localStorage            |
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## 🛠️ Getting Started
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### 1. Clone the Repo
 
-## Learn More
+```bash
+git clone https://github.com/YOUR-USERNAME/animal-crossing-villager-tracker.git
+cd animal-crossing-villager-tracker'
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 2 Start the Backend
+cd backend
+npm install
+npm start
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 3 Start the Frontend
+cd ..
+npm install
+npm start
+
+### Folder Structure
+.
+├── backend/              # Express server with /villagers endpoint
+├── src/
+│   ├── assets/           # Local villager images (.png/.jpg/.jpeg)
+│   ├── App.tsx           # Main React component
+│   └── ...
+├── villagers.json        # Custom local data
+└── README.md
+
+## 📝 Credits
+
+- Villager concepts and characters © Nintendo
+- Images used locally for personal/demo purposes only
+
+## 📜 Disclaimer
+
+This project is a fan-made, educational tool created for personal and portfolio use only. It is **not affiliated with or endorsed by Nintendo**.
+
+All Animal Crossing characters, names, and artwork are trademarks of **Nintendo Co., Ltd.** and are used here under fair use for non-commercial, illustrative purposes.
+
+If you are a rights holder and would like any content removed or credited differently, please contact me.
