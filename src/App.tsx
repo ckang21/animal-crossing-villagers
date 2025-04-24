@@ -110,30 +110,36 @@ function App() {
         />
 
         {/* Autocomplete Suggestions */}
-        {filteredSuggestions.map((v) => (
-          <li
-            key={v.id}
-            className="flex items-center gap-2 px-4 py-2 hover:bg-green-100 cursor-pointer"
-            onClick={() => {
-              setVillagerName(v.name);
-              setFilteredSuggestions([]);
-            }}
-          >
-            <img
-              src={
-                typeof v.image_uri === "string" &&
-                (v.image_uri.endsWith(".png") ||
-                v.image_uri.endsWith(".jpg") ||
-                v.image_uri.endsWith(".jpeg"))
-                  ? require(`./assets/${v.image_uri}`)
-                  : v.image_uri
-              }
-              alt={v.name}
-              className="w-6 h-6 rounded-full object-contain"
-            />
-            {v.name}
-          </li>
-        ))}
+        {filteredSuggestions.length > 0 && (
+        <ul className="list-none absolute top-12 w-64 bg-white border border-gray-300 rounded-lg shadow-md max-h-48 overflow-y-auto z-10">
+          {filteredSuggestions.map((v) => (
+            <li
+              key={v.id}
+              className="flex items-center gap-2 px-4 py-2 hover:bg-green-100 cursor-pointer"
+              onClick={() => {
+                setVillagerName(v.name);
+                setFilteredSuggestions([]);
+              }}
+            >
+              <img
+                src={
+                  typeof v.image_uri === "string" &&
+                  (v.image_uri.endsWith(".png") ||
+                    v.image_uri.endsWith(".jpg") ||
+                    v.image_uri.endsWith(".jpeg"))
+                    ? require(`./assets/${v.image_uri}`)
+                    : v.image_uri
+                }
+                alt={v.name}
+                className="w-6 h-6 rounded-full object-contain"
+              />
+              {v.name}
+            </li>
+          ))}
+        </ul>
+      )}
+
+
 
 
         <div className="flex gap-2 mt-4">

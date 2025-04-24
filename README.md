@@ -82,6 +82,10 @@ npm start
 ├── villagers.json        # Custom local data
 └── README.md
 
+## Notes
+
+- There are over 400 actual villagers in the game. This will only showcase my personal favorite villagers to save time.
+
 ## 📝 Credits
 
 - Villager concepts and characters © Nintendo
