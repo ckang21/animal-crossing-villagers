@@ -71,6 +71,34 @@ function App() {
     setVillagerList([...villagerList, match]);
     setVillagerName("");
   };
+
+  const handleSelectVillager = (name: string) => {
+    const match = allVillagers.find(
+      (v) => v.name.toLowerCase() === name.toLowerCase()
+    );
+  
+    if (!match) {
+      alert("Villager not found.");
+      return;
+    }
+  
+    const alreadyAdded = villagerList.some((v) => v.id === match.id);
+  
+    if (alreadyAdded) {
+      alert(`${match.name} is already on your island!`);
+      return;
+    }
+  
+    if (villagerList.length >= 10) {
+      alert("You can only have 10 villagers on your island!");
+      return;
+    }
+  
+    setVillagerList([...villagerList, match]);
+    setVillagerName("");  // Clear input
+    setFilteredSuggestions([]);  // Clear suggestions
+  };
+  
   
 
   const handleRemoveVillager = (id: number) => {
@@ -95,79 +123,79 @@ function App() {
         🏝️ Animal Crossing Villager Tracker
       </h1>
 
-      <div className="flex flex-col items-center relative mb-6">
-        <input
-          value={villagerName}
-          onChange={(e) => {
-            const input = e.target.value;
-            setVillagerName(input);
+      <div className="flex flex-col items-center relative mb-6 w-full max-w-lg mx-auto">
+        <div className="flex items-center gap-4 w-full">
+          {/* Search input */}
+          <input
+            id="villager-input"
+            value={villagerName}
+            onChange={(e) => {
+              const input = e.target.value;
+              setVillagerName(input);
 
-            if (input.length > 0) {
-              const matches = allVillagers.filter((v) =>
-                v.name.toLowerCase().includes(input.toLowerCase())
-              );
-              setFilteredSuggestions(matches.slice(0, 5));
-            } else {
-              setFilteredSuggestions([]);
-            }
-          }}
-          placeholder="Type a villager's name..."
-          className="p-2 rounded border w-64"
-        />
+              if (input.length > 0) {
+                const matches = allVillagers.filter((v) =>
+                  v.name.toLowerCase().includes(input.toLowerCase())
+                );
+                setFilteredSuggestions(matches.slice(0, 5));
+              } else {
+                setFilteredSuggestions([]);
+              }
+            }}
+            placeholder="Type a villager's name..."
+            className="p-2 rounded border w-full"
+          />
+
+          {/* Buttons */}
+          <div className="flex flex-col gap-2 pl-4 border-l border-gray-300">
+            <button
+              onClick={handleAddVillager}
+              className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
+              disabled={villagerList.length >= 10}
+            >
+              Add
+            </button>
+            <button
+              onClick={handleResetIsland}
+              className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
 
         {/* Autocomplete Suggestions */}
         {villagerName.length > 0 && (
-        <ul className="list-none absolute top-12 w-64 bg-white border border-gray-300 rounded-lg shadow-md max-h-48 overflow-y-auto z-10">
-          {filteredSuggestions.length > 0 ? (
-            filteredSuggestions.map((v) => (
-              <li
-                key={v.id}
-                className="flex items-center gap-2 px-4 py-2 hover:bg-green-100 cursor-pointer"
-                onClick={() => {
-                  setVillagerName(v.name);
-                  setFilteredSuggestions([]);
-                }}
-              >
-                <img
-                  src={
-                    typeof v.image_uri === "string" &&
-                    (v.image_uri.endsWith(".png") ||
-                      v.image_uri.endsWith(".jpg") ||
-                      v.image_uri.endsWith(".jpeg"))
-                      ? require(`./assets/${v.image_uri}`)
-                      : v.image_uri
-                  }
-                  alt={v.name}
-                  className="w-6 h-6 rounded-full object-contain"
-                />
-                {v.name}
-              </li>
-            ))
-          ) : (
-            <li className="px-4 py-2 text-gray-500">
-              No villagers found.
-            </li>
-          )}
-        </ul>
-      )}
-
-        <div className="flex gap-2 mt-4">
-          <button
-            onClick={handleAddVillager}
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-            disabled={villagerList.length >= 10}
-          >
-            Add
-          </button>
-
-          <button
-            onClick={handleResetIsland}
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-          >
-            Reset Island
-          </button>
-        </div>
+          <ul className="list-none absolute top-12 left-0 w-full bg-white border border-gray-300 rounded-lg shadow-md max-h-48 overflow-y-auto z-10">
+            {filteredSuggestions.length > 0 ? (
+              filteredSuggestions.map((v) => (
+                <li
+                  key={v.id}
+                  className="flex items-center gap-2 px-4 py-2 hover:bg-green-100 cursor-pointer"
+                  onClick={() => handleSelectVillager(v.name)}
+                >
+                  <img
+                    src={
+                      typeof v.image_uri === "string" &&
+                      (v.image_uri.endsWith(".png") ||
+                        v.image_uri.endsWith(".jpg") ||
+                        v.image_uri.endsWith(".jpeg"))
+                        ? require(`./assets/${v.image_uri}`)
+                        : v.image_uri
+                    }
+                    alt={v.name}
+                    className="w-6 h-6 rounded-full object-contain"
+                  />
+                  {v.name}
+                </li>
+              ))
+            ) : (
+              <li className="px-4 py-2 text-gray-500">No villagers found.</li>
+            )}
+          </ul>
+        )}
       </div>
+
 
       {displayedVillagers.map((v, index) => (
       <div
@@ -206,7 +234,15 @@ function App() {
         </>
         
         ) : (
-          <div className="flex flex-col items-center justify-center h-full text-gray-500 italic">Villager Available</div>
+          <button
+            onClick={() => {
+              const input = document.getElementById("villager-input") as HTMLInputElement;
+              input?.focus();
+            }}
+            className="flex flex-col items-center justify-center h-full w-full text-gray-400 italic hover:text-green-600 hover:bg-green-100 rounded-lg transition"
+          >
+            ➕ Add Villager
+          </button>
         )}
       </div>
     ))}
