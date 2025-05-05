@@ -4,12 +4,16 @@ function App() {
   const [villagerName, setVillagerName] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const [villagerList, setVillagerList] = useState<any[]>([]);
-  const [filteredSuggestions, setFilteredSuggestions] = useState<any[]>([]);
   const [allVillagers, setAllVillagers] = useState<any[]>([]);
+  const [filteredSuggestions, setFilteredSuggestions] = useState<any[]>([]);
+  const [villagerNotes, setVillagerNotes] = useState<Record<number, string>>({});
+  const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
+
+
   const displayedVillagers = [...villagerList];
+  while (displayedVillagers.length < 10) displayedVillagers.push(null);
 
-
-  // Load the local data from your backend
+  // --- Load from backend and localStorage ---
   useEffect(() => {
     const fetchVillagers = async () => {
       const res = await fetch("http://localhost:4000/villagers");
@@ -18,56 +22,53 @@ function App() {
     };
     fetchVillagers();
   }, []);
+
   useEffect(() => {
     if (allVillagers.length === 0) return;
-  
+
     const saved = localStorage.getItem("myIsland");
     if (saved) {
       const savedIds: number[] = JSON.parse(saved);
-  
       const hydrated = savedIds
         .map((id) => allVillagers.find((v) => v.id === id))
         .filter(Boolean);
-  
       setVillagerList(hydrated);
     }
-  
-    // ✅ Set the loaded flag here
+
+    const savedNotes = localStorage.getItem("villagerNotes");
+    if (savedNotes) {
+      setVillagerNotes(JSON.parse(savedNotes));
+    }
+
     setIsLoaded(true);
   }, [allVillagers]);
-  
-  
 
+  // --- Save to localStorage ---
   useEffect(() => {
-    if (!isLoaded) return; // 🚫 Don't save on first render
+    if (!isLoaded) return;
     const ids = villagerList.map((v) => v.id);
     localStorage.setItem("myIsland", JSON.stringify(ids));
   }, [villagerList, isLoaded]);
-  
+
+  useEffect(() => {
+    localStorage.setItem("villagerNotes", JSON.stringify(villagerNotes));
+  }, [villagerNotes]);
+
+  // --- Core Actions ---
   const handleAddVillager = () => {
     if (villagerList.length >= 10) {
       alert("You can only have 10 villagers on your island!");
       return;
     }
-  
+
     const match = allVillagers.find(
       (v) => v.name.toLowerCase() === villagerName.toLowerCase()
     );
-  
-    if (!match) {
-      alert("Villager not found.");
-      return;
-    }
-  
-    const alreadyAdded = villagerList.some(
-      (v) => v.id === match.id
-    );
-  
-    if (alreadyAdded) {
-      alert(`${match.name} is already on your island!`);
-      return;
-    }
-  
+
+    if (!match) return alert("Villager not found.");
+    if (villagerList.some((v) => v.id === match.id))
+      return alert(`${match.name} is already on your island!`);
+
     setVillagerList([...villagerList, match]);
     setVillagerName("");
   };
@@ -76,63 +77,45 @@ function App() {
     const match = allVillagers.find(
       (v) => v.name.toLowerCase() === name.toLowerCase()
     );
-  
-    if (!match) {
-      alert("Villager not found.");
-      return;
-    }
-  
-    const alreadyAdded = villagerList.some((v) => v.id === match.id);
-  
-    if (alreadyAdded) {
-      alert(`${match.name} is already on your island!`);
-      return;
-    }
-  
-    if (villagerList.length >= 10) {
-      alert("You can only have 10 villagers on your island!");
-      return;
-    }
-  
+    if (!match) return alert("Villager not found.");
+    if (villagerList.some((v) => v.id === match.id))
+      return alert(`${match.name} is already on your island!`);
+    if (villagerList.length >= 10)
+      return alert("You can only have 10 villagers on your island!");
+
     setVillagerList([...villagerList, match]);
-    setVillagerName("");  // Clear input
-    setFilteredSuggestions([]);  // Clear suggestions
+    setVillagerName("");
+    setFilteredSuggestions([]);
   };
-  
-  
 
   const handleRemoveVillager = (id: number) => {
     setVillagerList(villagerList.filter((v) => v.id !== id));
   };
 
   const handleResetIsland = () => {
-    const confirmed = window.confirm("Are you sure you want to reset your island? You will lose all your villagers.")
+    const confirmed = window.confirm("Are you sure you want to reset your island? You will lose all your villagers.");
     if (confirmed) {
       setVillagerList([]);
       localStorage.removeItem("myIsland");
     }
-  }
+  };
 
-  while (displayedVillagers.length < 10) {
-    displayedVillagers.push(null);
-  }
-
+  // --- Render ---
   return (
     <div className="min-h-screen bg-green-100 p-6">
       <h1 className="text-3xl font-bold text-center mb-6 text-green-800">
         🏝️ Animal Crossing Villager Tracker
       </h1>
 
+      {/* Search Bar + Buttons */}
       <div className="flex flex-col items-center relative mb-6 w-full max-w-lg mx-auto">
         <div className="flex items-center gap-4 w-full">
-          {/* Search input */}
           <input
             id="villager-input"
             value={villagerName}
             onChange={(e) => {
               const input = e.target.value;
               setVillagerName(input);
-
               if (input.length > 0) {
                 const matches = allVillagers.filter((v) =>
                   v.name.toLowerCase().includes(input.toLowerCase())
@@ -146,7 +129,6 @@ function App() {
             className="p-2 rounded border w-full"
           />
 
-          {/* Buttons */}
           <div className="flex flex-col gap-2 pl-4 border-l border-gray-300">
             <button
               onClick={handleAddVillager}
@@ -196,56 +178,80 @@ function App() {
         )}
       </div>
 
+      {/* Villager Slots */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        {displayedVillagers.map((v, index) => (
+          <div
+            key={v ? v.id : `empty-${index}`}
+            className="relative bg-gray-200 rounded-2xl shadow-md p-4 text-center space-y-2 w-full max-w-xs mx-auto min-h-[280px] flex flex-col overflow-x-hidden justify-between items-center"
+          >
+            {v ? (
+              <>
+                <button
+                  onClick={() => handleRemoveVillager(v.id)}
+                  className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                  aria-label="Remove"
+                >
+                  ❌
+                </button>
+                <img
+                  src={
+                    typeof v.image_uri === "string" &&
+                    (v.image_uri.endsWith(".png") ||
+                      v.image_uri.endsWith(".jpg") ||
+                      v.image_uri.endsWith(".jpeg"))
+                      ? require(`./assets/${v.image_uri}`)
+                      : v.image_uri
+                  }
+                  alt={v.name}
+                  className="w-24 h-24 mx-auto object-contain rounded-full shadow"
+                />
+                <h2 className="text-lg font-bold text-green-800">{v.name}</h2>
+                <p className="text-sm text-gray-600">{v.species}</p>
+                <p className="text-sm text-gray-600">🎂 {v.birthday}</p>
+                {/* 👇 Display saved note */}
+                {villagerNotes[v.id] && (
+                  <div
+                    className="mt-2 px-3 py-2 bg-green-50 border border-green-300 rounded-xl text-sm text-green-900 italic max-h-24 overflow-y-auto w-full whitespace-pre-wrap break-words shadow-sm"
+                  >
+                    {villagerNotes[v.id]}
+                  </div>
+                )}
+                {editingNoteId === v.id ? (
+                <textarea
+                  placeholder="Write a note..."
+                  value={villagerNotes[v.id] || ""}
+                  onChange={(e) =>
+                    setVillagerNotes({ ...villagerNotes, [v.id]: e.target.value })
+                  }
+                  onBlur={() => setEditingNoteId(null)}
+                  className="w-full text-sm p-2 rounded-xl border border-yellow-400 bg-yellow-50 text-yellow-900 italic resize-none shadow-inner focus:outline-none focus:ring-2 focus:ring-yellow-300"
+                  rows={3}
+                />
+              ) : (
+                <button
+                  onClick={() => setEditingNoteId(v.id)}
+                  className="text-sm text-blue-600 hover:underline"
+                >
+                  📝 Add Note
+                </button>
+              )}
 
-      {displayedVillagers.map((v, index) => (
-      <div
-        key={v ? v.id : `empty-${index}`}
-        className="relative bg-grey-200 rounded-2xl shadow-md p-4 text-center space-y-2 w-full max-w-xs mx-auto min-h-[280px] flex flex-col justify-between items-center"
-      >
-        {v ? (
-          <>
-          {/* ❌ Remove Button */}
-          <button
-            onClick={() => handleRemoveVillager(v.id)}
-            className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-            aria-label="Remove"
-          >
-            ❌
-          </button>
-        
-          <img
-            src={
-              typeof v.image_uri === "string" &&
-              (v.image_uri.endsWith(".png") ||
-                v.image_uri.endsWith(".jpg") ||
-                v.image_uri.endsWith(".jpeg"))
-                ? require(`./assets/${v.image_uri}`)
-                : v.image_uri
-            }
-            alt={v.name}
-            className="w-24 h-24 mx-auto mb-2 object-contain rounded-full shadow"
-          />
-        
-          <div className="space-y-1">
-            <h2 className="text-lg font-bold text-green-800">{v.name}</h2>
-            <p className="text-sm text-gray-600">{v.species}</p>
-            <p className="text-sm text-gray-600">🎂 {v.birthday}</p>
+              </>
+            ) : (
+              <button
+                onClick={() => {
+                  const input = document.getElementById("villager-input") as HTMLInputElement;
+                  input?.focus();
+                }}
+                className="flex flex-col items-center justify-center h-full w-full text-gray-400 italic hover:text-green-600 hover:bg-green-100 rounded-lg transition"
+              >
+                ➕ Add Villager
+              </button>
+            )}
           </div>
-        </>
-        
-        ) : (
-          <button
-            onClick={() => {
-              const input = document.getElementById("villager-input") as HTMLInputElement;
-              input?.focus();
-            }}
-            className="flex flex-col items-center justify-center h-full w-full text-gray-400 italic hover:text-green-600 hover:bg-green-100 rounded-lg transition"
-          >
-            ➕ Add Villager
-          </button>
-        )}
+        ))}
       </div>
-    ))}
     </div>
   );
 }
