@@ -8,6 +8,8 @@ function App() {
   const [filteredSuggestions, setFilteredSuggestions] = useState<any[]>([]);
   const [villagerNotes, setVillagerNotes] = useState<Record<number, string>>({});
   const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastText, setToastText] = useState("");
 
 
   const displayedVillagers = [...villagerList];
@@ -71,6 +73,9 @@ function App() {
 
     setVillagerList([...villagerList, match]);
     setVillagerName("");
+    setToastText(`${match.name} added to your island!`);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
   };
 
   const handleSelectVillager = (name: string) => {
@@ -86,10 +91,19 @@ function App() {
     setVillagerList([...villagerList, match]);
     setVillagerName("");
     setFilteredSuggestions([]);
+    setToastText(`${match.name} added to your island!`);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
   };
 
   const handleRemoveVillager = (id: number) => {
+    const removed = villagerList.find((v) => v.id === id);
     setVillagerList(villagerList.filter((v) => v.id !== id));
+    if (removed) {
+      setToastText(`${removed.name} removed from your island.`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
+    }
   };
 
   const handleResetIsland = () => {
@@ -183,7 +197,7 @@ function App() {
         {displayedVillagers.map((v, index) => (
           <div
             key={v ? v.id : `empty-${index}`}
-            className="relative bg-gray-200 rounded-2xl shadow-md p-4 text-center space-y-2 w-full max-w-xs mx-auto min-h-[280px] flex flex-col overflow-x-hidden justify-between items-center"
+            className="relative bg-gray-200 rounded-2xl shadow-md p-4 text-center space-y-2 w-full max-w-xs mx-auto min-h-[300px] flex flex-col justify-between items-center transform transition-transform duration-200 hover:scale-105 hover:shadow-xl"
           >
             {v ? (
               <>
@@ -252,6 +266,11 @@ function App() {
           </div>
         ))}
       </div>
+      {showToast && (
+      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-700 text-white px-4 py-2 rounded-lg shadow-lg animate-fadeIn z-50">
+        {toastText}
+      </div>
+      )}
     </div>
   );
 }
